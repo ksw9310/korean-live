@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignUpUrl="/onboarding" afterSignInUrl="/onboarding">
+    <ClerkProvider signUpForceRedirectUrl="/onboarding" signInForceRedirectUrl="/onboarding">
       <html
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}

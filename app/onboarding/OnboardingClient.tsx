@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -31,7 +32,13 @@ export function OnboardingClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 px-4">
+    <div className="min-h-screen flex flex-col">
+      <header className="border-b px-4 h-14 flex items-center">
+        <Link href="/" className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity">
+          KoreanLive
+        </Link>
+      </header>
+      <div className="flex-1 flex items-center justify-center bg-muted/40 px-4">
       <div className="w-full max-w-md space-y-4">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">Welcome to KoreanLive</h1>
@@ -65,6 +72,7 @@ export function OnboardingClient() {
           By continuing, you confirm you are 18 years of age or older and agree to our{" "}
           <a href="/terms" className="underline hover:text-foreground">Terms of Service</a>.
         </p>
+      </div>
       </div>
     </div>
   );

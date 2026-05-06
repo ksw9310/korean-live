@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const { userId: clerkId } = await auth();
   if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { bio, pricePerCredit, levelsTaught, languages } = await req.json();
+  const { bio, pricePerCredit, levelsTaught, languages, avatarUrl } = await req.json();
   if (!bio || !levelsTaught?.length || !languages?.length || !pricePerCredit) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
@@ -18,11 +18,14 @@ export async function POST(req: Request) {
   const user = await db.user.findUnique({ where: { clerkId } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  await db.teacherProfile.upsert({
-    where: { userId: user.id },
-    create: { userId: user.id, bio, pricePerCredit, levelsTaught, languages },
-    update: { bio, pricePerCredit, levelsTaught, languages },
-  });
+  await db.$transaction([
+    db.teacherProfile.upsert({
+      where: { userId: user.id },
+      create: { userId: user.id, bio, pricePerCredit, levelsTaught, languages },
+      update: { bio, pricePerCredit, levelsTaught, languages },
+    }),
+    ...(avatarUrl ? [db.user.update({ where: { id: user.id }, data: { avatarUrl } })] : []),
+  ]);
 
   return NextResponse.json({ ok: true });
 }

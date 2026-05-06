@@ -22,6 +22,7 @@ export default async function TeacherProfileSetupPage() {
       initialPrice={user.teacherProfile?.pricePerCredit ?? 15}
       initialLevels={user.teacherProfile?.levelsTaught ?? []}
       initialLanguages={user.teacherProfile?.languages ?? []}
+      initialAvatarUrl={user.avatarUrl ?? ""}
     />
   );
 }

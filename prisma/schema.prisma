@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  SPENT
+  REFUND
+}
+
+enum PayoutStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum KoreanLevel {
+  BEGINNER
+  ELEMENTARY_1
+  ELEMENTARY_2
+  INTERMEDIATE_1
+  INTERMEDIATE_2
+  ADVANCED_1
+  ADVANCED_2
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  role      Role
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacherProfile    TeacherProfile?
+  studentProfile    StudentProfile?
+  creditLedger      CreditLedger[]
+  bookingsAsStudent Booking[]       @relation("StudentBookings")
+  bookingsAsTeacher Booking[]       @relation("TeacherBookings")
+  reviewsWritten    Review[]        @relation("ReviewsWritten")
+  reviewsReceived   Review[]        @relation("ReviewsReceived")
+  payouts           Payout[]
+}
+
+model TeacherProfile {
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio             String        @db.Text
+  levelsTaught    KoreanLevel[]
+  pricePerCredit  Float
+  languages       String[]
+  rating          Float         @default(0)
+  totalReviews    Int           @default(0)
+  isVerified      Boolean       @default(false)
+  stripeAccountId String?
+  stripeOnboarded Boolean       @default(false)
+  availabilities  Availability[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model StudentProfile {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentLevel  KoreanLevel
+  learningGoals String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Availability {
+  id               String         @id @default(cuid())
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  teacherProfileId String
+  dayOfWeek        Int
+  startTime        String
+  endTime          String
+  createdAt        DateTime       @default(now())
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  student      User          @relation("StudentBookings", fields: [studentId], references: [id])
+  studentId    String
+  teacher      User          @relation("TeacherBookings", fields: [teacherId], references: [id])
+  teacherId    String
+  scheduledAt  DateTime
+  durationMins Int           @default(50)
+  status       BookingStatus @default(PENDING)
+  roomUrl      String?
+  roomName     String?
+  creditCost   Int           @default(1)
+  review       Review?
+  ledgerEntry  CreditLedger?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model CreditLedger {
+  id              String                @id @default(cuid())
+  user            User                  @relation(fields: [userId], references: [id])
+  userId          String
+  amount          Int
+  type            CreditTransactionType
+  booking         Booking?              @relation(fields: [bookingId], references: [id])
+  bookingId       String?               @unique
+  stripeSessionId String?
+  createdAt       DateTime              @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId String   @unique
+  student   User     @relation("ReviewsWritten", fields: [studentId], references: [id])
+  studentId String
+  teacher   User     @relation("ReviewsReceived", fields: [teacherId], references: [id])
+  teacherId String
+  rating    Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model Payout {
+  id               String       @id @default(cuid())
+  teacher          User         @relation(fields: [teacherId], references: [id])
+  teacherId        String
+  amount           Float
+  stripeTransferId String?
+  status           PayoutStatus @default(PENDING)
+  createdAt        DateTime     @default(now())
+}

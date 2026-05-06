@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/" className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity">
             KoreanLive
           </Link>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </header>
       <main className="flex-1">{children}</main>

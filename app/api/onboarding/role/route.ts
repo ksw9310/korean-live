@@ -14,18 +14,25 @@ export async function POST(req: Request) {
   const clerkUser = await currentUser();
   if (!clerkUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
+  const name = `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() || "User";
+
   const db = getDb();
-  await db.user.upsert({
-    where: { clerkId },
-    create: {
-      clerkId,
-      email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
-      name: `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() || "User",
-      avatarUrl: clerkUser.imageUrl,
-      role,
-    },
-    update: { role },
-  });
+
+  // Google OAuth로 재가입 시 이메일은 같지만 clerkId가 다를 수 있음 → 병합 처리
+  const existingByEmail = await db.user.findUnique({ where: { email } });
+  if (existingByEmail && existingByEmail.clerkId !== clerkId) {
+    await db.user.update({
+      where: { email },
+      data: { clerkId, role, avatarUrl: clerkUser.imageUrl },
+    });
+  } else {
+    await db.user.upsert({
+      where: { clerkId },
+      create: { clerkId, email, name, avatarUrl: clerkUser.imageUrl, role },
+      update: { role },
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }

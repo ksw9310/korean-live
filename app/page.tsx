@@ -129,7 +129,7 @@ export default async function LandingPage() {
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/onboarding">Dashboard</Link>
                 </Button>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
               </>
             ) : (
               <>

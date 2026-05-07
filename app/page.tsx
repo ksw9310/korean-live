@@ -416,8 +416,9 @@ export default async function LandingPage() {
               </ul>
             </div>
             <div className="space-y-3">
-              <p className="font-medium text-sm">Company</p>
+              <p className="font-medium text-sm">Support</p>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/faq" className="hover:text-foreground transition-colors">FAQ & Help</Link></li>
                 <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
                 <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
                 <li><Link href="/refund" className="hover:text-foreground transition-colors">Refund Policy</Link></li>

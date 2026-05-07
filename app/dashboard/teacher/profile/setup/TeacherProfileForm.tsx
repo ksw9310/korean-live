@@ -26,25 +26,16 @@ export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [bio, setBio] = useState(initialBio);
-  const [selectedLevels, setSelectedLevels] = useState<string[]>(initialLevels);
+  const [selectedLevel, setSelectedLevel] = useState<string>(initialLevels[0] ?? "");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(initialLanguages);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl ?? "");
   const [avatarPreview, setAvatarPreview] = useState(initialAvatarUrl ?? "");
 
   const isEditing = !!initialBio;
 
-  // Derive creditCost and earnings from selected levels
-  const maxCreditCost = selectedLevels.length > 0
-    ? Math.max(...selectedLevels.map((l) => LEVEL_INFO[l]?.creditCost ?? 1))
-    : null;
-  const pricePerCredit = 10; // 1 credit = $10 platform-wide
-  const teacherEarnings = maxCreditCost ? (maxCreditCost * pricePerCredit * 0.8).toFixed(2) : null;
-
-  function toggleLevel(level: string) {
-    setSelectedLevels((prev) =>
-      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
-    );
-  }
+  const creditCost = selectedLevel ? (LEVEL_INFO[selectedLevel]?.creditCost ?? 1) : null;
+  const pricePerCredit = 10;
+  const teacherEarnings = creditCost ? (creditCost * pricePerCredit * 0.8).toFixed(2) : null;
 
   function toggleLanguage(lang: string) {
     setSelectedLanguages((prev) =>
@@ -76,7 +67,7 @@ export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!bio.trim()) { toast.error("Please write a short bio"); return; }
-    if (selectedLevels.length === 0) { toast.error("Select at least one level you teach"); return; }
+    if (!selectedLevel) { toast.error("Select the level you teach"); return; }
     if (selectedLanguages.length === 0) { toast.error("Select at least one language you speak"); return; }
 
     setLoading(true);
@@ -87,8 +78,8 @@ export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages
         body: JSON.stringify({
           bio,
           pricePerCredit,
-          creditCost: maxCreditCost,
-          levelsTaught: selectedLevels,
+          creditCost,
+          levelsTaught: [selectedLevel],
           languages: selectedLanguages,
           avatarUrl: avatarUrl || undefined,
         }),
@@ -150,17 +141,17 @@ export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages
             {/* Level selection with descriptions */}
             <div className="space-y-3">
               <div>
-                <Label>Levels you teach</Label>
-                <p className="text-xs text-muted-foreground mt-1">Select all levels that apply. Your session rate is based on the highest level you teach.</p>
+                <Label>Level you teach</Label>
+                <p className="text-xs text-muted-foreground mt-1">하나의 레벨을 선택하세요. 선택한 레벨의 수업만 진행할 수 있어요.</p>
               </div>
               <div className="space-y-3">
                 {Object.entries(LEVEL_INFO).map(([key, info]) => {
-                  const selected = selectedLevels.includes(key);
+                  const selected = selectedLevel === key;
                   return (
                     <button
                       key={key}
                       type="button"
-                      onClick={() => toggleLevel(key)}
+                      onClick={() => setSelectedLevel(key)}
                       className={`w-full text-left rounded-lg border p-4 transition-colors ${
                         selected ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"
                       }`}
@@ -191,7 +182,7 @@ export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages
               </div>
 
               {/* Earnings preview */}
-              {maxCreditCost && (
+              {creditCost && (
                 <div className="rounded-lg bg-muted/50 px-4 py-3 text-sm">
                   <span className="text-muted-foreground">Your estimated earnings: </span>
                   <span className="font-semibold">${teacherEarnings}/session</span>

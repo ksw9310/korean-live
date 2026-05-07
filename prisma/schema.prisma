@@ -33,12 +33,8 @@ enum PayoutStatus {
 
 enum KoreanLevel {
   BEGINNER
-  ELEMENTARY_1
-  ELEMENTARY_2
-  INTERMEDIATE_1
-  INTERMEDIATE_2
-  ADVANCED_1
-  ADVANCED_2
+  INTERMEDIATE
+  ADVANCED
 }
 
 model User {
@@ -68,6 +64,7 @@ model TeacherProfile {
   bio             String        @db.Text
   levelsTaught    KoreanLevel[]
   pricePerCredit  Float
+  creditCost      Float         @default(1.0)
   languages       String[]
   rating          Float         @default(0)
   totalReviews    Int           @default(0)

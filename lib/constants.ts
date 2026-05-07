@@ -1,21 +1,55 @@
 export const LEVEL_LABELS: Record<string, string> = {
   BEGINNER: "Beginner",
-  ELEMENTARY_1: "Elementary 1",
-  ELEMENTARY_2: "Elementary 2",
-  INTERMEDIATE_1: "Intermediate 1",
-  INTERMEDIATE_2: "Intermediate 2",
-  ADVANCED_1: "Advanced 1",
-  ADVANCED_2: "Advanced 2",
+  INTERMEDIATE: "Intermediate",
+  ADVANCED: "Advanced",
 };
 
-export const LEVEL_TOPIK: Record<string, string> = {
-  BEGINNER: "Pre-TOPIK",
-  ELEMENTARY_1: "TOPIK I (Level 1)",
-  ELEMENTARY_2: "TOPIK I (Level 2)",
-  INTERMEDIATE_1: "TOPIK II (Level 3)",
-  INTERMEDIATE_2: "TOPIK II (Level 4)",
-  ADVANCED_1: "TOPIK II (Level 5)",
-  ADVANCED_2: "TOPIK II (Level 6)",
+export const LEVEL_CREDIT_COST: Record<string, number> = {
+  BEGINNER: 1,
+  INTERMEDIATE: 1.5,
+  ADVANCED: 2,
+};
+
+export const LEVEL_INFO: Record<
+  string,
+  { label: string; topik: string; creditCost: number; price: number; bullets: string[] }
+> = {
+  BEGINNER: {
+    label: "Beginner",
+    topik: "Pre-TOPIK ~ TOPIK I (Level 1–2)",
+    creditCost: 1,
+    price: 10,
+    bullets: [
+      "Complete beginners welcome",
+      "Learn Hangul from scratch",
+      "Basic greetings & daily expressions",
+      "Simple conversations about yourself",
+    ],
+  },
+  INTERMEDIATE: {
+    label: "Intermediate",
+    topik: "TOPIK II (Level 3–4)",
+    creditCost: 1.5,
+    price: 15,
+    bullets: [
+      "Can hold basic conversations",
+      "Grammar patterns & vocabulary building",
+      "Reading & writing simple texts",
+      "Everyday situations (shopping, travel, etc.)",
+    ],
+  },
+  ADVANCED: {
+    label: "Advanced",
+    topik: "TOPIK II (Level 5–6)",
+    creditCost: 2,
+    price: 20,
+    bullets: [
+      "Fluent in daily conversations",
+      "Business Korean & formal writing",
+      "News, literature, nuanced expression",
+      "TOPIK II Level 5–6 preparation",
+    ],
+  },
 };
 
 export interface CreditPack {

@@ -4,37 +4,41 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { LEVEL_LABELS } from "@/lib/constants";
+import { LEVEL_INFO } from "@/lib/constants";
 import { toast } from "sonner";
-import { Camera } from "lucide-react";
+import { Camera, CheckCircle2 } from "lucide-react";
 
 const LANGUAGES = ["English", "Japanese", "Chinese", "Spanish", "French", "German", "Other"];
 
 interface Props {
   initialBio: string;
-  initialPrice: number;
   initialLevels: string[];
   initialLanguages: string[];
   initialAvatarUrl?: string;
 }
 
-export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, initialLanguages, initialAvatarUrl }: Props) {
+export function TeacherProfileForm({ initialBio, initialLevels, initialLanguages, initialAvatarUrl }: Props) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [bio, setBio] = useState(initialBio);
-  const [pricePerCredit, setPricePerCredit] = useState(String(initialPrice));
   const [selectedLevels, setSelectedLevels] = useState<string[]>(initialLevels);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(initialLanguages);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl ?? "");
   const [avatarPreview, setAvatarPreview] = useState(initialAvatarUrl ?? "");
 
   const isEditing = !!initialBio;
+
+  // Derive creditCost and earnings from selected levels
+  const maxCreditCost = selectedLevels.length > 0
+    ? Math.max(...selectedLevels.map((l) => LEVEL_INFO[l]?.creditCost ?? 1))
+    : null;
+  const pricePerCredit = 10; // 1 credit = $10 platform-wide
+  const teacherEarnings = maxCreditCost ? (maxCreditCost * pricePerCredit * 0.8).toFixed(2) : null;
 
   function toggleLevel(level: string) {
     setSelectedLevels((prev) =>
@@ -51,7 +55,6 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setAvatarPreview(URL.createObjectURL(file));
     setUploading(true);
     try {
@@ -75,10 +78,7 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
     if (!bio.trim()) { toast.error("Please write a short bio"); return; }
     if (selectedLevels.length === 0) { toast.error("Select at least one level you teach"); return; }
     if (selectedLanguages.length === 0) { toast.error("Select at least one language you speak"); return; }
-    const price = parseFloat(pricePerCredit);
-    if (isNaN(price) || price < 5 || price > 100) {
-      toast.error("Price must be between $5 and $100"); return;
-    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/onboarding/teacher", {
@@ -86,7 +86,8 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bio,
-          pricePerCredit: price,
+          pricePerCredit,
+          creditCost: maxCreditCost,
           levelsTaught: selectedLevels,
           languages: selectedLanguages,
           avatarUrl: avatarUrl || undefined,
@@ -104,14 +105,14 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 px-4 py-12">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-xl">
         <CardHeader>
           <CardTitle>{isEditing ? "Edit your tutor profile" : "Set up your tutor profile"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
 
-            {/* Avatar Upload */}
+            {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <button
                 type="button"
@@ -129,18 +130,11 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
                   <Camera className="h-6 w-6 text-white" />
                 </div>
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
-              <p className="text-xs text-muted-foreground">
-                {uploading ? "Uploading…" : "Click to upload profile photo (optional)"}
-              </p>
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleAvatarChange} />
+              <p className="text-xs text-muted-foreground">{uploading ? "Uploading…" : "Click to upload profile photo (optional)"}</p>
             </div>
 
+            {/* Bio */}
             <div className="space-y-2">
               <Label>About you</Label>
               <Textarea
@@ -153,27 +147,60 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
               <p className="text-xs text-muted-foreground text-right">{bio.length}/500</p>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
+            {/* Level selection with descriptions */}
+            <div className="space-y-3">
+              <div>
                 <Label>Levels you teach</Label>
-                {selectedLevels.length > 0 && (
-                  <span className="text-xs text-muted-foreground">{selectedLevels.length} selected</span>
-                )}
+                <p className="text-xs text-muted-foreground mt-1">Select all levels that apply. Your session rate is based on the highest level you teach.</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(LEVEL_LABELS).map(([key, label]) => (
-                  <Badge
-                    key={key}
-                    variant={selectedLevels.includes(key) ? "default" : "outline"}
-                    className="cursor-pointer select-none"
-                    onClick={() => toggleLevel(key)}
-                  >
-                    {label}
-                  </Badge>
-                ))}
+              <div className="space-y-3">
+                {Object.entries(LEVEL_INFO).map(([key, info]) => {
+                  const selected = selectedLevels.includes(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => toggleLevel(key)}
+                      className={`w-full text-left rounded-lg border p-4 transition-colors ${
+                        selected ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-sm">{info.label}</span>
+                            <span className="text-xs text-muted-foreground">{info.topik}</span>
+                          </div>
+                          <ul className="space-y-0.5">
+                            {info.bullets.map((b) => (
+                              <li key={b} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <span className="w-1 h-1 rounded-full bg-muted-foreground shrink-0" />
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="text-xs font-medium text-violet-400 mt-2">
+                            {info.creditCost} credit{info.creditCost > 1 ? "s" : ""}/session · ${info.price}/session for students
+                          </p>
+                        </div>
+                        {selected && <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
+
+              {/* Earnings preview */}
+              {maxCreditCost && (
+                <div className="rounded-lg bg-muted/50 px-4 py-3 text-sm">
+                  <span className="text-muted-foreground">Your estimated earnings: </span>
+                  <span className="font-semibold">${teacherEarnings}/session</span>
+                  <span className="text-xs text-muted-foreground ml-1">(after 20% platform fee)</span>
+                </div>
+              )}
             </div>
 
+            {/* Languages */}
             <div className="space-y-2">
               <Label>Languages you speak</Label>
               <div className="flex flex-wrap gap-2">
@@ -188,26 +215,6 @@ export function TeacherProfileForm({ initialBio, initialPrice, initialLevels, in
                   </Badge>
                 ))}
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Price per session (USD)</Label>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">$</span>
-                <Input
-                  type="number"
-                  min="5"
-                  max="100"
-                  step="0.5"
-                  value={pricePerCredit}
-                  onChange={(e) => setPricePerCredit(e.target.value)}
-                  className="w-28"
-                />
-                <span className="text-sm text-muted-foreground">per 50-min session (you keep 80%)</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                You&apos;ll earn ${(parseFloat(pricePerCredit || "0") * 0.8).toFixed(2)} per session after platform fee.
-              </p>
             </div>
 
             <Button type="submit" className="w-full" disabled={loading || uploading}>

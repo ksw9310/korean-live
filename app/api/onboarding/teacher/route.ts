@@ -6,12 +6,9 @@ export async function POST(req: Request) {
   const { userId: clerkId } = await auth();
   if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { bio, pricePerCredit, levelsTaught, languages, avatarUrl } = await req.json();
-  if (!bio || !levelsTaught?.length || !languages?.length || !pricePerCredit) {
+  const { bio, pricePerCredit, creditCost, levelsTaught, languages, avatarUrl } = await req.json();
+  if (!bio || !levelsTaught?.length || !languages?.length) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-  }
-  if (pricePerCredit < 5 || pricePerCredit > 100) {
-    return NextResponse.json({ error: "Price must be between $5 and $100" }, { status: 400 });
   }
 
   const db = getDb();
@@ -21,8 +18,8 @@ export async function POST(req: Request) {
   await db.$transaction([
     db.teacherProfile.upsert({
       where: { userId: user.id },
-      create: { userId: user.id, bio, pricePerCredit, levelsTaught, languages },
-      update: { bio, pricePerCredit, levelsTaught, languages },
+      create: { userId: user.id, bio, pricePerCredit: pricePerCredit ?? 10, creditCost: creditCost ?? 1, levelsTaught, languages },
+      update: { bio, pricePerCredit: pricePerCredit ?? 10, creditCost: creditCost ?? 1, levelsTaught, languages },
     }),
     ...(avatarUrl ? [db.user.update({ where: { id: user.id }, data: { avatarUrl } })] : []),
   ]);

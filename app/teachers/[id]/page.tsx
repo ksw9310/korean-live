@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LEVEL_LABELS, DAY_NAMES } from "@/lib/constants";
+import { LEVEL_LABELS, LEVEL_INFO, DAY_NAMES } from "@/lib/constants";
 import { BookingWidget } from "./BookingWidget";
 
 async function getTeacher(id: string) {
@@ -72,10 +72,30 @@ export default async function TeacherDetailPage({
 
           <Card>
             <CardHeader><CardTitle>Levels taught</CardTitle></CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {profile.levelsTaught.map((lvl) => (
-                <Badge key={lvl} variant="secondary">{LEVEL_LABELS[lvl]}</Badge>
-              ))}
+            <CardContent className="space-y-3">
+              {profile.levelsTaught.map((lvl) => {
+                const info = LEVEL_INFO[lvl];
+                if (!info) return <Badge key={lvl} variant="secondary">{LEVEL_LABELS[lvl]}</Badge>;
+                return (
+                  <div key={lvl} className="rounded-lg border p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-sm">{info.label}</span>
+                      <span className="text-xs text-muted-foreground">{info.topik}</span>
+                      <span className="ml-auto text-xs font-medium text-violet-400">
+                        {info.creditCost} credit{info.creditCost > 1 ? "s" : ""}/session
+                      </span>
+                    </div>
+                    <ul className="space-y-0.5">
+                      {info.bullets.map((b) => (
+                        <li key={b} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <span className="w-1 h-1 rounded-full bg-muted-foreground shrink-0" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
 
@@ -121,6 +141,7 @@ export default async function TeacherDetailPage({
             teacherId={teacher.id}
             teacherName={teacher.name}
             pricePerCredit={profile.pricePerCredit}
+            creditCost={profile.creditCost}
             availabilities={profile.availabilities}
             isLoggedIn={!!clerkId}
           />

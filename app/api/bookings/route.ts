@@ -35,8 +35,9 @@ export async function POST(req: Request) {
   if (!teacher?.teacherProfile) return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
   if (student.role !== "STUDENT") return NextResponse.json({ error: "Only students can book" }, { status: 403 });
 
+  const creditCost = teacher.teacherProfile.creditCost ?? 1;
   const balance = student.creditLedger.reduce((sum: number, e: { amount: number }) => sum + e.amount, 0);
-  if (balance < 1) {
+  if (balance < creditCost) {
     return NextResponse.json({ error: "Insufficient credits. Please buy more credits." }, { status: 402 });
   }
 
@@ -52,17 +53,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "This time slot is already booked" }, { status: 409 });
   }
 
+  const creditCostInt = Math.round(creditCost);
   const booking = await db.booking.create({
     data: {
       studentId: student.id,
       teacherId,
       scheduledAt: scheduledDate,
       status: "CONFIRMED",
-      creditCost: 1,
+      creditCost: creditCostInt,
       ledgerEntry: {
         create: {
           userId: student.id,
-          amount: -1,
+          amount: -creditCostInt,
           type: "SPENT",
         },
       },

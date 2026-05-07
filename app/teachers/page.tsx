@@ -9,14 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LEVEL_LABELS } from "@/lib/constants";
 import { TeachersFilter } from "./TeachersFilter";
 
-type KoreanLevel =
-  | "BEGINNER"
-  | "ELEMENTARY_1"
-  | "ELEMENTARY_2"
-  | "INTERMEDIATE_1"
-  | "INTERMEDIATE_2"
-  | "ADVANCED_1"
-  | "ADVANCED_2";
+type KoreanLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 
 async function getTeachers(level: string, maxPrice: string, sort: string) {
   const db = getDb();
@@ -32,9 +25,10 @@ async function getTeachers(level: string, maxPrice: string, sort: string) {
     where: {
       role: "TEACHER",
       teacherProfile: {
-        isNot: null,
-        ...(level ? { levelsTaught: { has: level as KoreanLevel } } : {}),
-        ...(maxPrice ? { pricePerCredit: { lte: parseFloat(maxPrice) } } : {}),
+        is: {
+          ...(level ? { levelsTaught: { has: level as KoreanLevel } } : {}),
+          ...(maxPrice ? { pricePerCredit: { lte: parseFloat(maxPrice) } } : {}),
+        },
       },
     },
     include: { teacherProfile: { include: { availabilities: true } } },

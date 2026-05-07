@@ -19,7 +19,6 @@ export default async function TeacherProfileSetupPage() {
   return (
     <TeacherProfileForm
       initialBio={user.teacherProfile?.bio ?? ""}
-      initialPrice={user.teacherProfile?.pricePerCredit ?? 15}
       initialLevels={user.teacherProfile?.levelsTaught ?? []}
       initialLanguages={user.teacherProfile?.languages ?? []}
       initialAvatarUrl={user.avatarUrl ?? ""}

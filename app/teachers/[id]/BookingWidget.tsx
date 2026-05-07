@@ -18,6 +18,7 @@ interface Props {
   teacherId: string;
   teacherName: string;
   pricePerCredit: number;
+  creditCost: number;
   availabilities: Availability[];
   isLoggedIn: boolean;
 }
@@ -42,7 +43,7 @@ function getNextOccurrences(availabilities: Availability[]): Date[] {
   return slots.sort((a, b) => a.getTime() - b.getTime()).slice(0, 6);
 }
 
-export function BookingWidget({ teacherId, teacherName, pricePerCredit, availabilities, isLoggedIn }: Props) {
+export function BookingWidget({ teacherId, teacherName, pricePerCredit, creditCost, availabilities, isLoggedIn }: Props) {
   const router = useRouter();
   const [selected, setSelected] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
@@ -74,7 +75,9 @@ export function BookingWidget({ teacherId, teacherName, pricePerCredit, availabi
     <Card className="sticky top-4">
       <CardHeader>
         <CardTitle className="text-base">Book a session</CardTitle>
-        <p className="text-sm text-muted-foreground">1 credit · 50 minutes</p>
+        <p className="text-sm text-muted-foreground">
+          {creditCost} credit{creditCost !== 1 ? "s" : ""} · 50 minutes
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         {slots.length === 0 ? (
@@ -108,7 +111,7 @@ export function BookingWidget({ teacherId, teacherName, pricePerCredit, availabi
           onClick={handleBook}
           disabled={loading || slots.length === 0}
         >
-          {loading ? "Booking…" : isLoggedIn ? "Book (1 credit)" : "Sign in to book"}
+          {loading ? "Booking…" : isLoggedIn ? `Book (${creditCost} credit${creditCost !== 1 ? "s" : ""})` : "Sign in to book"}
         </Button>
 
         <p className="text-xs text-muted-foreground text-center">

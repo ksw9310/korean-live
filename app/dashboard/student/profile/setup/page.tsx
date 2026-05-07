@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LEVEL_LABELS, LEVEL_TOPIK } from "@/lib/constants";
+import { LEVEL_INFO } from "@/lib/constants";
 import { toast } from "sonner";
 
 export default function StudentProfileSetupPage() {
@@ -50,9 +50,9 @@ export default function StudentProfileSetupPage() {
                   <SelectValue placeholder="Select level…" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(LEVEL_LABELS).map(([key, label]) => (
+                  {Object.entries(LEVEL_INFO).map(([key, info]) => (
                     <SelectItem key={key} value={key}>
-                      {label} — {LEVEL_TOPIK[key]}
+                      {info.label} — {info.topik}
                     </SelectItem>
                   ))}
                 </SelectContent>

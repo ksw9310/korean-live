@@ -2,12 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { after } from "next/server";
 import { getDb } from "@/lib/db";
-import { Resend } from "resend";
-
-function getResend() {
-  if (!process.env.RESEND_API_KEY) throw new Error("RESEND_API_KEY not set");
-  return new Resend(process.env.RESEND_API_KEY);
-}
+import { sendBookingConfirmed } from "@/lib/email";
 
 export async function POST(req: Request) {
   const { userId: clerkId } = await auth();
@@ -76,12 +71,13 @@ export async function POST(req: Request) {
 
   after(async () => {
     try {
-      await getResend().emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
-        to: [student.email, teacher.email],
-        subject: "KoreanLive session confirmed",
-        html: `<p>Your session is confirmed for <strong>${scheduledDate.toLocaleString()}</strong>.</p>
-               <p>Join at: ${process.env.NEXT_PUBLIC_APP_URL}/room/${booking.id}</p>`,
+      await sendBookingConfirmed({
+        studentEmail: student.email,
+        teacherEmail: teacher.email,
+        studentName: student.name,
+        teacherName: teacher.name,
+        scheduledAt: scheduledDate,
+        bookingId: booking.id,
       });
     } catch (err) {
       console.error("Email send failed", err);

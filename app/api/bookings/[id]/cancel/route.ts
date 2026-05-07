@@ -1,6 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { getDb } from "@/lib/db";
+import { sendBookingCancelled } from "@/lib/email";
 
 export async function POST(
   _req: Request,
@@ -46,6 +48,27 @@ export async function POST(
           bookingId: booking.id,
         },
       });
+    }
+  });
+
+  after(async () => {
+    try {
+      const [student, teacher] = await Promise.all([
+        db.user.findUnique({ where: { id: booking.studentId } }),
+        db.user.findUnique({ where: { id: booking.teacherId } }),
+      ]);
+      if (student && teacher) {
+        await sendBookingCancelled({
+          studentEmail: student.email,
+          teacherEmail: teacher.email,
+          studentName: student.name,
+          teacherName: teacher.name,
+          scheduledAt: booking.scheduledAt,
+          refunded: isRefundable,
+        });
+      }
+    } catch (err) {
+      console.error("Cancel email send failed", err);
     }
   });
 

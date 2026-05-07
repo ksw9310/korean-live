@@ -18,6 +18,7 @@ interface Booking {
 export function TeacherBookingCard({ booking: b }: { booking: Booking }) {
   const router = useRouter();
   const [cancelling, setCancelling] = useState(false);
+  const [status, setStatus] = useState(b.status);
 
   async function handleCancel() {
     if (!confirm("Cancel this session? The student will receive a full credit refund.")) return;
@@ -27,6 +28,7 @@ export function TeacherBookingCard({ booking: b }: { booking: Booking }) {
       const res = await fetch(`/api/bookings/${b.id}/cancel`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to cancel");
+      setStatus("CANCELLED");
       toast.success("Session cancelled — student has been refunded.");
       router.refresh();
     } catch (err) {
@@ -48,16 +50,16 @@ export function TeacherBookingCard({ booking: b }: { booking: Booking }) {
         <div className="flex items-center gap-3">
           <Badge
             variant={
-              b.status === "COMPLETED"
+              status === "COMPLETED"
                 ? "default"
-                : b.status === "CANCELLED"
+                : status === "CANCELLED"
                 ? "destructive"
                 : "secondary"
             }
           >
-            {b.status.toLowerCase()}
+            {status.toLowerCase()}
           </Badge>
-          {b.status === "CONFIRMED" && (
+          {status === "CONFIRMED" && (
             <>
               <Button size="sm" asChild>
                 <Link href={`/room/${b.id}`}>Join</Link>

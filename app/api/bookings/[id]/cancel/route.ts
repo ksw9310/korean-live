@@ -45,7 +45,6 @@ export async function POST(
           userId: booking.studentId,
           amount: booking.creditCost,
           type: "REFUND",
-          bookingId: booking.id,
         },
       });
     }

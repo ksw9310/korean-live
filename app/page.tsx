@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -104,47 +103,6 @@ export default async function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-full bg-background">
-      {/* Nav */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="font-bold text-xl tracking-tight">
-              Korean<span className="text-primary">Live</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/teachers" className="hover:text-foreground transition-colors">
-                Browse tutors
-              </Link>
-              <Link href="/#pricing" className="hover:text-foreground transition-colors">
-                Pricing
-              </Link>
-              <Link href="/#how-it-works" className="hover:text-foreground transition-colors">
-                How it works
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            {userId ? (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/onboarding">Dashboard</Link>
-                </Button>
-                <UserButton />
-              </>
-            ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/sign-in">Log in</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/sign-up">Get started free</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border/40">
         {/* Background gradient */}

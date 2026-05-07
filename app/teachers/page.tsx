@@ -1,36 +1,71 @@
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { getDb } from "@/lib/db";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LEVEL_LABELS } from "@/lib/constants";
+import { TeachersFilter } from "./TeachersFilter";
 
-async function getTeachers() {
+type KoreanLevel =
+  | "BEGINNER"
+  | "ELEMENTARY_1"
+  | "ELEMENTARY_2"
+  | "INTERMEDIATE_1"
+  | "INTERMEDIATE_2"
+  | "ADVANCED_1"
+  | "ADVANCED_2";
+
+async function getTeachers(level: string, maxPrice: string, sort: string) {
   const db = getDb();
+
+  const orderBy =
+    sort === "price_asc"
+      ? { teacherProfile: { pricePerCredit: "asc" as const } }
+      : sort === "price_desc"
+      ? { teacherProfile: { pricePerCredit: "desc" as const } }
+      : { teacherProfile: { rating: "desc" as const } };
+
   return db.user.findMany({
-    where: { role: "TEACHER", teacherProfile: { isNot: null } },
+    where: {
+      role: "TEACHER",
+      teacherProfile: {
+        isNot: null,
+        ...(level ? { levelsTaught: { has: level as KoreanLevel } } : {}),
+        ...(maxPrice ? { pricePerCredit: { lte: parseFloat(maxPrice) } } : {}),
+      },
+    },
     include: { teacherProfile: { include: { availabilities: true } } },
-    orderBy: { teacherProfile: { rating: "desc" } },
+    orderBy,
   });
 }
 
-export default async function TeachersPage() {
-  const teachers = await getTeachers();
+export default async function TeachersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ level?: string; maxPrice?: string; sort?: string }>;
+}) {
+  const { level = "", maxPrice = "", sort = "rating" } = await searchParams;
+  const teachers = await getTeachers(level, maxPrice, sort);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Find a Korean tutor</h1>
         <p className="text-muted-foreground mt-1">
-          {teachers.length} tutors available · 1 credit = 50-min session
+          {teachers.length} tutor{teachers.length !== 1 ? "s" : ""} available · 1 credit = 50-min session
         </p>
       </div>
 
+      <Suspense>
+        <TeachersFilter />
+      </Suspense>
+
       {teachers.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
-          No tutors yet. Check back soon!
+          No tutors match your filters. Try adjusting them.
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">

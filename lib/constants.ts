@@ -59,7 +59,6 @@ export interface CreditPack {
   label: string;
   description: string;
   popular?: boolean;
-  paddlePriceEnvKey: string; // NEXT_PUBLIC_PADDLE_PRICE_*
 }
 
 export const CREDIT_PACKS: CreditPack[] = [
@@ -69,7 +68,6 @@ export const CREDIT_PACKS: CreditPack[] = [
     price: 49,
     label: "Starter",
     description: "Try your first lesson",
-    paddlePriceEnvKey: "NEXT_PUBLIC_PADDLE_PRICE_5_CREDITS",
   },
   {
     id: "10credits",
@@ -78,7 +76,6 @@ export const CREDIT_PACKS: CreditPack[] = [
     label: "Popular",
     description: "10% off per session",
     popular: true,
-    paddlePriceEnvKey: "NEXT_PUBLIC_PADDLE_PRICE_10_CREDITS",
   },
   {
     id: "20credits",
@@ -86,7 +83,6 @@ export const CREDIT_PACKS: CreditPack[] = [
     price: 159,
     label: "Best Value",
     description: "20% off per session",
-    paddlePriceEnvKey: "NEXT_PUBLIC_PADDLE_PRICE_20_CREDITS",
   },
 ];
 

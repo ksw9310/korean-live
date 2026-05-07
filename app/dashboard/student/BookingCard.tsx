@@ -27,8 +27,9 @@ interface Booking {
 
 export function BookingCard({ booking: b }: { booking: Booking }) {
   const router = useRouter();
-  const [cancelling, setCancelling] = useState(false);
   const [status, setStatus] = useState(b.status);
+  const [review, setReview] = useState(b.review);
+  const [cancelling, setCancelling] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [selectedStar, setSelectedStar] = useState(0);
@@ -70,8 +71,9 @@ export function BookingCard({ booking: b }: { booking: Booking }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to submit review");
-      toast.success("Review submitted!");
+      setReview({ rating: selectedStar });
       setReviewOpen(false);
+      toast.success("Review submitted!");
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not submit review");
@@ -91,12 +93,12 @@ export function BookingCard({ booking: b }: { booking: Booking }) {
             <p className="text-sm text-muted-foreground">
               {new Date(b.scheduledAt).toLocaleString("en-US")}
             </p>
-            {b.review && (
+            {review && (
               <div className="flex gap-0.5 mt-1">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-3 w-3 ${i < b.review!.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`}
+                    className={`h-3 w-3 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`}
                   />
                 ))}
               </div>
@@ -124,7 +126,7 @@ export function BookingCard({ booking: b }: { booking: Booking }) {
                 </Button>
               </>
             )}
-            {status === "COMPLETED" && !b.review && (
+            {status === "COMPLETED" && !review && (
               <Button size="sm" variant="outline" onClick={() => setReviewOpen(true)}>
                 Leave a review
               </Button>

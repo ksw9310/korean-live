@@ -51,14 +51,19 @@ export default async function CreditsPage() {
               </p>
             </CardHeader>
             <CardContent>
-              <CreditPurchaseButton packId={pack.id} label={`Buy ${pack.credits} credits for $${pack.price}`} />
+              <CreditPurchaseButton
+                packId={pack.id}
+                label={`Buy ${pack.credits} credits for $${pack.price}`}
+                credits={pack.credits}
+                paddlePriceId={process.env[pack.paddlePriceEnvKey]}
+              />
             </CardContent>
           </Card>
         ))}
       </div>
 
       <p className="text-xs text-muted-foreground text-center">
-        Payments are processed securely by Stripe. Credits are non-refundable once a session is booked and confirmed.
+        Payments are processed securely by Paddle. Credits are non-refundable once a session is booked and confirmed.
       </p>
     </div>
   );

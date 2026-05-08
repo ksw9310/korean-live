@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ConditionalNav } from "@/components/ConditionalNav";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col bg-background text-foreground">
+          <NextTopLoader color="#E5323B" height={3} showSpinner={false} />
           <ConditionalNav><Header /></ConditionalNav>
           <main className="flex-1 flex flex-col">
             {children}

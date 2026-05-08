@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/Logo";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -347,47 +346,6 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border/60 py-12 px-4 bg-muted/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid sm:grid-cols-4 gap-8 mb-10">
-            <div className="space-y-3">
-              <Logo size="sm" href="/" />
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Live 1-on-1 Korean lessons with native tutors.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <p className="font-medium text-sm">Learn</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/teachers" className="hover:text-foreground transition-colors">Browse tutors</Link></li>
-                <li><Link href="/#how-it-works" className="hover:text-foreground transition-colors">How it works</Link></li>
-                <li><Link href="/#pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <p className="font-medium text-sm">Teach</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/sign-up?role=teacher" className="hover:text-foreground transition-colors">Become a tutor</Link></li>
-                <li><Link href="/dashboard/teacher" className="hover:text-foreground transition-colors">Tutor dashboard</Link></li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <p className="font-medium text-sm">Support</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/faq" className="hover:text-foreground transition-colors">FAQ & Help</Link></li>
-                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
-                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
-                <li><Link href="/refund" className="hover:text-foreground transition-colors">Refund Policy</Link></li>
-              </ul>
-            </div>
-          </div>
-          <Separator />
-          <p className="text-sm text-muted-foreground text-center mt-8">
-            © 2026 KoreanLive. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

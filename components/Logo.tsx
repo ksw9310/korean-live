@@ -23,7 +23,7 @@ export function Logo({ href = "/", size = "md" }: LogoProps) {
       {/* Speech bubble */}
       <path
         d="M3 5C3 3.34 4.34 2 6 2H26C27.66 2 29 3.34 29 5V21C29 22.66 27.66 24 26 24H19L16 30L13 24H6C4.34 24 3 22.66 3 21V5Z"
-        className="fill-foreground"
+        fill="currentColor"
       />
       {/* Red live circle */}
       <circle cx="16" cy="13" r="5.5" fill={RED} />

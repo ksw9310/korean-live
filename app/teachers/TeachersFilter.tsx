@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { LEVEL_LABELS } from "@/lib/constants";
 
 const LEVELS = Object.entries(LEVEL_LABELS) as [keyof typeof LEVEL_LABELS, string][];
@@ -19,8 +20,6 @@ export function TeachersFilter() {
   const params = useSearchParams();
 
   const level = params.get("level") ?? "";
-  const maxPrice = params.get("maxPrice") ?? "";
-  const sort = params.get("sort") ?? "rating";
 
   const update = useCallback(
     (key: string, value: string) => {
@@ -35,7 +34,7 @@ export function TeachersFilter() {
     [params, router]
   );
 
-  const hasFilters = level || maxPrice;
+  const hasFilters = !!level;
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -54,31 +53,6 @@ export function TeachersFilter() {
         </SelectContent>
       </Select>
 
-      {/* Max price filter */}
-      <Select value={maxPrice || "all"} onValueChange={(v) => update("maxPrice", v)}>
-        <SelectTrigger className="w-40">
-          <SelectValue placeholder="Any price" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Any price</SelectItem>
-          <SelectItem value="10">Up to $10</SelectItem>
-          <SelectItem value="15">Up to $15</SelectItem>
-          <SelectItem value="20">Up to $20</SelectItem>
-          <SelectItem value="25">Up to $25</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {/* Sort */}
-      <Select value={sort} onValueChange={(v) => update("sort", v)}>
-        <SelectTrigger className="w-40">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="rating">Top rated</SelectItem>
-          <SelectItem value="price_asc">Price: low → high</SelectItem>
-          <SelectItem value="price_desc">Price: high → low</SelectItem>
-        </SelectContent>
-      </Select>
 
       {hasFilters && (
         <Button

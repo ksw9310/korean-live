@@ -11,15 +11,9 @@ import { TeachersFilter } from "./TeachersFilter";
 
 type KoreanLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 
-async function getTeachers(level: string, maxPrice: string, sort: string) {
-  const db = getDb();
 
-  const orderBy =
-    sort === "price_asc"
-      ? { teacherProfile: { pricePerCredit: "asc" as const } }
-      : sort === "price_desc"
-      ? { teacherProfile: { pricePerCredit: "desc" as const } }
-      : { teacherProfile: { rating: "desc" as const } };
+async function getTeachers(level: string) {
+  const db = getDb();
 
   return db.user.findMany({
     where: {
@@ -27,22 +21,21 @@ async function getTeachers(level: string, maxPrice: string, sort: string) {
       teacherProfile: {
         is: {
           ...(level ? { levelsTaught: { has: level as KoreanLevel } } : {}),
-          ...(maxPrice ? { pricePerCredit: { lte: parseFloat(maxPrice) } } : {}),
         },
       },
     },
     include: { teacherProfile: { include: { availabilities: true } } },
-    orderBy,
+    orderBy: { teacherProfile: { rating: "desc" as const } },
   });
 }
 
 export default async function TeachersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ level?: string; maxPrice?: string; sort?: string }>;
+  searchParams: Promise<{ level?: string }>;
 }) {
-  const { level = "", maxPrice = "", sort = "rating" } = await searchParams;
-  const teachers = await getTeachers(level, maxPrice, sort);
+  const { level = "" } = await searchParams;
+  const teachers = await getTeachers(level);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">

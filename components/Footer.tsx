@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   return (
@@ -6,9 +7,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="font-bold text-lg tracking-tight">
-              Korean<span className="text-primary">Live</span>
-            </Link>
+            <Logo size="sm" />
             <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
               1-on-1 live Korean lessons with native tutors. Book by credit, learn at your pace.
             </p>

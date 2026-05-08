@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/Logo";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -351,9 +352,7 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid sm:grid-cols-4 gap-8 mb-10">
             <div className="space-y-3">
-              <p className="font-bold text-lg">
-                Korean<span className="text-primary">Live</span>
-              </p>
+              <Logo size="sm" href="/" />
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Live 1-on-1 Korean lessons with native tutors.
               </p>

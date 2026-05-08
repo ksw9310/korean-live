@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const RED = "#E5323B";
+
 const studentSteps = [
   {
     step: "1",
@@ -15,8 +17,8 @@ const studentSteps = [
   },
   {
     step: "3",
-    title: "Find a teacher",
-    desc: "Browse teachers, filter by level or price, and view their profile and availability.",
+    title: "Find a tutor",
+    desc: "Browse tutors, filter by level, and view their profile and availability.",
   },
   {
     step: "4",
@@ -39,7 +41,7 @@ const teacherSteps = [
   {
     step: "2",
     title: "Set up your profile",
-    desc: "Add your bio, levels you teach, price per session, and languages you speak.",
+    desc: "Add your bio, level you teach, price per session, and languages you speak.",
   },
   {
     step: "3",
@@ -147,124 +149,100 @@ const faqs = [
 
 export default function FaqPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight">
-            Korean<span className="text-violet-400">Live</span>
-          </Link>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/teachers">Browse Teachers</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/sign-up">Get Started</Link>
-            </Button>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 py-16 space-y-20">
+      {/* Hero */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold tracking-tight">Help Center</h1>
+        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+          Everything you need to know about learning Korean on KoreanLive.
+        </p>
+      </div>
+
+      {/* How it works — Students */}
+      <section className="space-y-8">
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: RED }}>For Students</span>
+          <h2 className="text-2xl font-bold mt-1">How to start learning</h2>
         </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 py-16 space-y-20">
-        {/* Hero */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Help Center</h1>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Everything you need to know about learning Korean on KoreanLive.
-          </p>
-        </div>
-
-        {/* How it works — Students */}
-        <section className="space-y-8">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-violet-400">For Students</span>
-            <h2 className="text-2xl font-bold mt-1">How to start learning</h2>
-          </div>
-          <div className="grid sm:grid-cols-5 gap-4">
-            {studentSteps.map((s) => (
-              <div key={s.step} className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-sm font-bold text-violet-400">
-                  {s.step}
-                </div>
-                <p className="font-semibold text-sm">{s.title}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+        <div className="grid sm:grid-cols-5 gap-4">
+          {studentSteps.map((s) => (
+            <div key={s.step} className="space-y-2">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                style={{ backgroundColor: RED }}
+              >
+                {s.step}
               </div>
-            ))}
-          </div>
-          <Button asChild>
-            <Link href="/teachers">Browse Teachers →</Link>
-          </Button>
-        </section>
-
-        {/* How it works — Teachers */}
-        <section className="space-y-8">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-violet-400">For Teachers</span>
-            <h2 className="text-2xl font-bold mt-1">How to start teaching</h2>
-          </div>
-          <div className="grid sm:grid-cols-5 gap-4">
-            {teacherSteps.map((s) => (
-              <div key={s.step} className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-sm font-bold text-violet-400">
-                  {s.step}
-                </div>
-                <p className="font-semibold text-sm">{s.title}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-          <Button variant="outline" asChild>
-            <Link href="/sign-up">Become a Teacher →</Link>
-          </Button>
-        </section>
-
-        {/* FAQ */}
-        <section className="space-y-12">
-          <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
-          {faqs.map((cat) => (
-            <div key={cat.category} className="space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-violet-400">
-                {cat.category}
-              </h3>
-              <div className="divide-y border rounded-xl overflow-hidden">
-                {cat.items.map((item) => (
-                  <details key={item.q} className="group">
-                    <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none hover:bg-muted/40 transition-colors">
-                      <span className="font-medium text-sm">{item.q}</span>
-                      <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-                    </summary>
-                    <div className="px-5 pb-4 text-sm text-muted-foreground leading-relaxed">
-                      {item.a}
-                    </div>
-                  </details>
-                ))}
-              </div>
+              <p className="font-semibold text-sm">{s.title}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
             </div>
           ))}
-        </section>
-
-        {/* Contact */}
-        <section className="rounded-xl border bg-muted/30 p-8 text-center space-y-3">
-          <h2 className="text-xl font-bold">Still have questions?</h2>
-          <p className="text-muted-foreground text-sm">
-            Our support team is happy to help.
-          </p>
-          <Button variant="outline" asChild>
-            <a href="mailto:support@koreanlive.live">Contact Support</a>
-          </Button>
-        </section>
-      </main>
-
-      <footer className="border-t mt-20">
-        <div className="max-w-4xl mx-auto px-4 py-8 flex flex-wrap gap-4 justify-between items-center text-sm text-muted-foreground">
-          <span>© 2025 KoreanLive</span>
-          <div className="flex gap-4">
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/refund" className="hover:text-foreground transition-colors">Refund Policy</Link>
-          </div>
         </div>
-      </footer>
+        <Button asChild>
+          <Link href="/teachers">Browse Tutors →</Link>
+        </Button>
+      </section>
+
+      {/* How it works — Teachers */}
+      <section className="space-y-8">
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: RED }}>For Teachers</span>
+          <h2 className="text-2xl font-bold mt-1">How to start teaching</h2>
+        </div>
+        <div className="grid sm:grid-cols-5 gap-4">
+          {teacherSteps.map((s) => (
+            <div key={s.step} className="space-y-2">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                style={{ backgroundColor: RED }}
+              >
+                {s.step}
+              </div>
+              <p className="font-semibold text-sm">{s.title}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+        <Button variant="outline" asChild>
+          <Link href="/sign-up">Become a Teacher →</Link>
+        </Button>
+      </section>
+
+      {/* FAQ */}
+      <section className="space-y-12">
+        <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+        {faqs.map((cat) => (
+          <div key={cat.category} className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-widest" style={{ color: RED }}>
+              {cat.category}
+            </h3>
+            <div className="divide-y border rounded-xl overflow-hidden">
+              {cat.items.map((item) => (
+                <details key={item.q} className="group">
+                  <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none hover:bg-muted/40 transition-colors">
+                    <span className="font-medium text-sm">{item.q}</span>
+                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                  </summary>
+                  <div className="px-5 pb-4 text-sm text-muted-foreground leading-relaxed">
+                    {item.a}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Contact */}
+      <section className="rounded-xl border bg-muted/30 p-8 text-center space-y-3">
+        <h2 className="text-xl font-bold">Still have questions?</h2>
+        <p className="text-muted-foreground text-sm">
+          Our support team is happy to help.
+        </p>
+        <Button variant="outline" asChild>
+          <a href="mailto:support@koreanlive.live">Contact Support</a>
+        </Button>
+      </section>
     </div>
   );
 }
